@@ -1,9 +1,8 @@
 use std::sync::Arc;
-use std::sync::mpsc::Receiver;
 
 use sqlx::{Pool, Postgres};
 use sqlx::postgres::PgPoolOptions;
-use tokio::sync::{mpsc, oneshot};
+use tokio::sync::{oneshot};
 
 use crate::config::CONFIG;
 use crate::infrastructure::di_container::{DB_POOL_DEP, DIContainer, GAME_INDEX_PROCESSOR_DEP, GAME_REPOSITORY_IMPL_DEP, MOVIE_INDEX_PROCESSOR_DEP, MOVIE_REPOSITORY_IMPL_DEP, RECIPE_INDEX_PROCESSOR_DEP, RECIPE_REPOSITORY_IMPL_DEP, SEARCH_SERVICE_IMPL_DEP, TV_INDEX_PROCESSOR_DEP, TV_REPOSITORY_IMPL_DEP};
@@ -39,15 +38,15 @@ impl AppRunner {
 
         let conn_info = format!(
             "postgres://{}:{}@{}:{}/{}",
-            &*CONFIG.database().username(),
-            &*CONFIG.database().password(),
-            &*CONFIG.database().host(),
-            &CONFIG.database().port(),
-            &*CONFIG.database().db_name()
+            CONFIG.database().username(),
+            CONFIG.database().password(),
+            CONFIG.database().host(),
+            CONFIG.database().port(),
+            CONFIG.database().db_name()
         );
         let db_pool = PgPoolOptions::new()
-            .max_connections(*&CONFIG.database().max_connections())
-            .min_connections(*&CONFIG.database().min_connections())
+            .max_connections(CONFIG.database().max_connections())
+            .min_connections(CONFIG.database().min_connections())
             .connect(conn_info.as_str())
             .await?;
 
@@ -57,15 +56,15 @@ impl AppRunner {
     }
 
     fn logger_init() {
-        if (&*CONFIG).logger().enabled() {
+        if CONFIG.logger().enabled() {
             env_logger::builder()
-                .filter_level((&*CONFIG).logger().level())
+                .filter_level(CONFIG.logger().level())
                 .init();
         }
     }
 
     fn dependency_injection_init(db_pool: Pool<Postgres>) -> anyhow::Result<Arc<DIContainer>> {
-        let mut di_container = DIContainer::new();
+        let di_container = DIContainer::new();
 
         // Repositories
         di_container.add(DB_POOL_DEP, db_pool);
@@ -87,10 +86,10 @@ impl AppRunner {
     }
 
     async fn background_jobs(di_container: &DIContainer) {
-        let indexer_runner = IndexerRunner::new();
+        let indexer_runner: IndexerRunner = Default::default();
         let mut signal = indexer_runner.run(di_container);
 
-        if (&*CONFIG).indexer_runner().wait_until_index() {
+        if CONFIG.indexer_runner().wait_until_index() {
             signal.recv().await;
         }
     }

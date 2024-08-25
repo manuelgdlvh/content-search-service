@@ -1,7 +1,7 @@
 use crate::models::language::Language::{En, Es};
 
-pub const ES_LANGUAGE: &'static str = "ES";
-pub const EN_LANGUAGE: &'static str = "EN";
+pub const ES_LANGUAGE: &str = "ES";
+pub const EN_LANGUAGE: &str = "EN";
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Language {
@@ -11,16 +11,13 @@ pub enum Language {
 
 impl Language {
     pub fn all() -> Vec<Language> {
-        let mut result = Vec::new();
-        result.push(Language::Es);
-        result.push(Language::En);
-        result
+        vec![Es, En]
     }
 }
 
-impl Into<&str> for Language {
-    fn into(self) -> &'static str {
-        match self {
+impl From<Language> for &str {
+    fn from(value: Language) -> Self {
+        match value{
             Es => { ES_LANGUAGE }
             En => { EN_LANGUAGE }
         }

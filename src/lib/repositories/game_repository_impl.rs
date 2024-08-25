@@ -3,7 +3,6 @@ use std::sync::Arc;
 use axum::async_trait;
 use sqlx::{Pool, Postgres, query, Row};
 use crate::entities::game::Game;
-use crate::entities::movie::Movie;
 use crate::infrastructure::di_container::{DB_POOL_DEP, DIContainer};
 
 pub struct GameRepositoryImpl {

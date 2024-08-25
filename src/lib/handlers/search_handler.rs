@@ -7,14 +7,13 @@ use axum::response::{IntoResponse, Response};
 use axum_extra::extract::JsonDeserializer;
 
 use crate::handlers::requests::search_request::SearchRequest;
-use crate::handlers::responses::search_response::SearchResponse;
 use crate::models::entity::Entity;
 use crate::models::language::Language;
 use crate::services::search_service_impl::SearchService;
 
-pub const LANGUAGE_HEADER: &'static str = "Language";
-pub const DEFAULT_LANGUAGE: &'static str = "EN";
-pub const DEFAULT_LANGUAGE_HEADER: LazyLock<HeaderValue> = LazyLock::new(|| {
+pub const LANGUAGE_HEADER: &str = "Language";
+pub const DEFAULT_LANGUAGE: &str = "EN";
+pub static DEFAULT_LANGUAGE_HEADER: LazyLock<HeaderValue> = LazyLock::new(|| {
     HeaderValue::try_from(DEFAULT_LANGUAGE).unwrap()
 });
 
@@ -25,8 +24,7 @@ pub async fn search<S>(State(search_service): State<Arc<S>>
 where
     S: SearchService,
 {
-    let mut input = payload.deserialize()
-        .or_else(|err| Err(err.into_response()))?;
+    let mut input = payload.deserialize().map_err(|err| err.into_response())?;
 
     let language;
     if let Some(value) = headers.get(LANGUAGE_HEADER) {
@@ -37,13 +35,11 @@ where
 
     log::info!("received search request with language: {language}, input: {:?}", input);
 
-    let entity: Entity = Entity::try_from(input.entity().as_ref())
-        .or_else(|err| Err(StatusCode::BAD_REQUEST.into_response()))?;
+    let entity: Entity = Entity::try_from(input.entity().as_ref()).map_err(|_| StatusCode::BAD_REQUEST.into_response())?;
 
-    let language: Language = Language::try_from(language)
-        .or_else(|err| Err(StatusCode::BAD_REQUEST.into_response()))?;
+    let language: Language = Language::try_from(language).map_err(|_| StatusCode::BAD_REQUEST.into_response())?;
 
-    let keywords = input.keywords_mut().as_mut();
+    let keywords = input.keywords_mut();
     match search_service.search(keywords, language, entity) {
         Ok(value) => {
             Ok(Json(value))

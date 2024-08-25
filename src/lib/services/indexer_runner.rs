@@ -1,7 +1,6 @@
-use std::sync::Arc;
 use std::time::Duration;
 
-use tokio::sync::{mpsc, oneshot};
+use tokio::sync::{mpsc};
 use tokio::sync::mpsc::Receiver;
 use tokio::time;
 
@@ -18,17 +17,16 @@ use crate::services::impls::tv_doc_details_retriever::TvDocDetailsRetriever;
 use crate::services::index_processor::IndexProcessor;
 use crate::services::index_task::IndexTask;
 
+
+#[derive(Default)]
 pub struct IndexerRunner;
 
 
 impl IndexerRunner {
-    pub fn new() -> Self {
-        Self {}
-    }
     pub fn run(&self, di_container: &DIContainer) -> Receiver<()> {
         let (tx, rv) = mpsc::channel::<()>(1);
-        let batch_size = *&CONFIG.indexer_runner().batch_size();
-        let interval = *&CONFIG.indexer_runner().interval();
+        let batch_size = CONFIG.indexer_runner().batch_size();
+        let interval = CONFIG.indexer_runner().interval();
 
         let movie_indexer = IndexTask::<MovieDocDetailsRetriever<MovieRepositoryImpl>
             , IndexProcessor>::new(batch_size, MovieDocDetailsRetriever::new(di_container), di_container.get::<IndexProcessor>(MOVIE_INDEX_PROCESSOR_DEP));

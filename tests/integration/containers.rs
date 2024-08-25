@@ -63,7 +63,7 @@ fn init() {
 
     let pg_container_port = (&*POSTGRES_CONTAINER).get_host_port_ipv4(5432).expect("Postgres Container Port retrieved");
     let pg_container_host = (&*POSTGRES_CONTAINER).get_host().expect("Postgres Container Port retrieved").to_string();
-    change_db_config(&config_path, pg_container_host, pg_container_port).expect("Postgres Port changed");
+    let (old_host, old_port) = change_db_config(&config_path, pg_container_host, pg_container_port).expect("Postgres Port changed");
 
     thread::spawn(move || {
         runtime::Builder::new_current_thread()
@@ -77,19 +77,24 @@ fn init() {
 
     log::info!("waiting to web server to be fully initialized...");
     rx.blocking_recv().expect("Received started signal");
+
+    change_db_config(&config_path, old_host, old_port).expect("Postgres Port changed");
 }
 
-fn change_db_config(config_path: &str, host: String, port: u16) -> anyhow::Result<()> {
+fn change_db_config(config_path: &str, host: String, port: u16) -> anyhow::Result<(String, u16)> {
     let content = fs::read_to_string(config_path)?;
 
     let mut config: Config = toml::from_str(&content)?;
+    let old_port = config.database().port();
+    let old_host = config.database().host().to_string();
+
     config.database_mut().set_port(port);
     config.database_mut().set_host(host);
 
     let new_content = toml::to_string(&config)?;
     fs::write(config_path, new_content)?;
 
-    Ok(())
+    Ok((old_host, old_port))
 }
 
 #[dtor]

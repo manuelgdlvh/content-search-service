@@ -1,4 +1,3 @@
-use std::ascii::AsciiExt;
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -43,7 +42,7 @@ impl SearchService for SearchServiceImpl {
         let searcher = self.searchers.get(&entity).context("SEARCHER NOT FOUND")?;
 
         keywords.make_ascii_lowercase();
-        let tokens = keywords.trim().split_whitespace().collect::<Vec<&str>>();
+        let tokens = keywords.split_whitespace().collect::<Vec<&str>>();
         searcher.search(lang, &tokens)
     }
 }

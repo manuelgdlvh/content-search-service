@@ -4,20 +4,20 @@ use std::sync::Arc;
 use dashmap::DashMap;
 
 // Repositories
-pub const DB_POOL_DEP: &'static str = "db_pool";
-pub const MOVIE_REPOSITORY_IMPL_DEP: &'static str = "movie_repository_impl";
-pub const TV_REPOSITORY_IMPL_DEP: &'static str = "tv_repository_impl";
-pub const RECIPE_REPOSITORY_IMPL_DEP: &'static str = "recipe_repository_impl";
-pub const GAME_REPOSITORY_IMPL_DEP: &'static str = "game_repository_impl";
+pub const DB_POOL_DEP: &str = "db_pool";
+pub const MOVIE_REPOSITORY_IMPL_DEP: &str = "movie_repository_impl";
+pub const TV_REPOSITORY_IMPL_DEP: &str = "tv_repository_impl";
+pub const RECIPE_REPOSITORY_IMPL_DEP: &str = "recipe_repository_impl";
+pub const GAME_REPOSITORY_IMPL_DEP: &str = "game_repository_impl";
 
 // Services
-pub const SEARCH_SERVICE_IMPL_DEP: &'static str = "search_service_impl";
+pub const SEARCH_SERVICE_IMPL_DEP: &str = "search_service_impl";
 
 // Indexers
-pub const MOVIE_INDEX_PROCESSOR_DEP: &'static str = "movie_index_processor";
-pub const TV_INDEX_PROCESSOR_DEP: &'static str = "tv_index_processor";
-pub const RECIPE_INDEX_PROCESSOR_DEP: &'static str = "recipe_index_processor";
-pub const GAME_INDEX_PROCESSOR_DEP: &'static str = "game_index_processor";
+pub const MOVIE_INDEX_PROCESSOR_DEP: &str = "movie_index_processor";
+pub const TV_INDEX_PROCESSOR_DEP: &str = "tv_index_processor";
+pub const RECIPE_INDEX_PROCESSOR_DEP: &str = "recipe_index_processor";
+pub const GAME_INDEX_PROCESSOR_DEP: &str = "game_index_processor";
 
 
 type GenericType = Arc<dyn Any + Send + Sync>;

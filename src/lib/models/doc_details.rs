@@ -1,4 +1,3 @@
-use std::ascii::AsciiExt;
 
 pub struct DocDetails {
     id: u64,

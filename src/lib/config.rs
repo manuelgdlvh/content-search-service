@@ -1,8 +1,6 @@
 use std::env;
-use std::error::Error;
 use std::sync::LazyLock;
 
-use anyhow::Context;
 use serde::{Deserialize, Serialize};
 
 use crate::config::database_config::DatabaseConfig;
@@ -15,7 +13,7 @@ pub mod database_config;
 mod indexer_runner_config;
 mod logger_config;
 
-pub const CONFIG_PATH_ENV: &'static str = "CONFIG_PATH";
+pub const CONFIG_PATH_ENV: &str = "CONFIG_PATH";
 
 pub static CONFIG: LazyLock<Config> = LazyLock::new(|| {
     Config::get().expect("Failed loading configuration")

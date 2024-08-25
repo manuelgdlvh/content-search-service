@@ -12,8 +12,8 @@ use tantivy::schema::{Field, OwnedValue, Schema, STORED, TEXT};
 use crate::models::doc_details::DocDetails;
 use crate::models::language::Language;
 
-const TITLE_FIELD: &'static str = "title";
-const ID_FIELD: &'static str = "id";
+const TITLE_FIELD: &str = "title";
+const ID_FIELD: &str = "id";
 const LIMIT_RESULT_SIZE: usize = 75;
 const MEMORY_BUDGET_BYTES: usize = 100_000_000;
 
@@ -23,7 +23,6 @@ pub struct IndexProcessor {
 }
 
 struct Inner {
-    pub index: Index,
     pub index_writer: Mutex<TantivyIndexWriter>,
     pub index_reader: IndexReader,
     pub fields: HashMap<String, Field>,
@@ -47,7 +46,6 @@ impl Inner {
         fields.insert(ID_FIELD.to_string(), id);
 
         Ok(Inner {
-            index,
             index_writer: Mutex::new(index_writer),
             index_reader,
             fields,
@@ -74,9 +72,8 @@ impl Inner {
         let id = self.id();
 
         let last_index = tokens.len() - 1;
-        let mut current_index = 0;
         let mut subqueries = Vec::new();
-        for token in tokens {
+        for (current_index, token) in tokens.iter().enumerate() {
             let mut current = Cow::from(*token);
             if current_index == last_index {
                 current.to_mut().push_str(".*");
@@ -84,7 +81,6 @@ impl Inner {
 
             subqueries.push((Occur::Must, Box::new(RegexQuery::from_pattern(current.as_ref(), title)?)
                 as Box<dyn Query>));
-            current_index += 1;
         }
 
         let query = BooleanQuery::new(subqueries);
@@ -131,7 +127,7 @@ impl IndexProcessor {
     }
 
     fn inner<'a>(&'a self, language: &'a Language) -> Ref<'a, Language, Inner> {
-        self.inner.get(&language).unwrap()
+        self.inner.get(language).unwrap()
     }
 
     fn inner_mut<'a>(&'a self, language: &'a Language) -> RefMut<'a, Language, Inner> {
