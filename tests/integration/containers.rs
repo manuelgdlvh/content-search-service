@@ -43,6 +43,7 @@ static POSTGRES_CONTAINER: LazyLock<Container<GenericImage>> = LazyLock::new(|| 
         .with_env_var("POSTGRES_USER", "postgres")
         .with_env_var("POSTGRES_PASSWORD", "postgres")
         .with_env_var("POSTGRES_DB", "postgres")
+        .with_mapped_port(5432, 5432.tcp())
         .with_mount(Mount::bind_mount(format!("{}{CONFIG_FOLDER_PATH}{INIT_SQL_PATH}", current_dir.to_str().expect("Current Dir retrieved"))
                                       , "/docker-entrypoint-initdb.d/init.sql"))
         .start().expect("Postgres started")
@@ -60,8 +61,7 @@ fn init() {
     env::set_var(CONFIG_PATH_ENV, &config_path);
 
     let (tx, rx) = oneshot::channel();
-    let pg_container_port = (&*POSTGRES_CONTAINER).get_host_port_ipv4(5432).expect("Postgres Container Port retrieved");
-    change_db_port(&config_path, pg_container_port).expect("Postgres Port changed");
+    &*POSTGRES_CONTAINER;
 
     thread::spawn(move || {
         runtime::Builder::new_current_thread()
@@ -75,18 +75,6 @@ fn init() {
 
     log::info!("waiting to web server to be fully initialized...");
     rx.blocking_recv().expect("Received started signal");
-}
-
-
-fn change_db_port(config_path: &str, port: u16) -> anyhow::Result<()> {
-    let content = fs::read_to_string(config_path)?;
-
-    let mut config: Config = toml::from_str(&content)?;
-    config.database_mut().set_port(port);
-    let new_content = toml::to_string(&config)?;
-    fs::write(config_path, new_content)?;
-
-    Ok(())
 }
 
 
