@@ -1,0 +1,21 @@
+[server]
+port = 8080
+host = "127.0.0.1"
+
+[database]
+db_name = "postgres"
+username = "postgres"
+password = "postgres"
+host = "localhost"
+port = 5432
+max_connections = 20
+min_connections = 20
+
+[indexer_runner]
+batch_size = 1000
+interval = 86400
+wait_until_index = false
+
+[logger]
+enabled = true
+level = "INFO"
