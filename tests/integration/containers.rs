@@ -94,7 +94,7 @@ fn change_db_config(config_path: &str, host: String, port: u16) -> anyhow::Resul
 
 #[dtor]
 fn destroy() {
-    (&*POSTGRES_CONTAINER).stop();
+    //(&*POSTGRES_CONTAINER).stop();
 }
 
 
