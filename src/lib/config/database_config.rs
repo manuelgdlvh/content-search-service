@@ -44,5 +44,9 @@ impl DatabaseConfig<> {
     pub fn set_port(&mut self, port: u16) {
         self.port = port;
     }
+
+    pub fn set_host(&mut self, host: String) {
+        self.host = host;
+    }
 }
 

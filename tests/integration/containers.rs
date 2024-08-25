@@ -38,7 +38,7 @@ static POSTGRES_CONTAINER: LazyLock<Container<GenericImage>> = LazyLock::new(|| 
 
     GenericImage::new("postgres", "latest")
         .with_wait_for(WaitFor::Log(LogWaitStrategy::new(LogSource::StdOut, "PostgreSQL init process complete; ready for start up.")))
-        .with_wait_for(WaitFor::Duration { length: Duration::from_secs(5) })
+        .with_wait_for(WaitFor::Duration { length: Duration::from_secs(1) })
         .with_exposed_port(5432.tcp())
         .with_env_var("POSTGRES_USER", "postgres")
         .with_env_var("POSTGRES_PASSWORD", "postgres")
@@ -60,8 +60,10 @@ fn init() {
     env::set_var(CONFIG_PATH_ENV, &config_path);
 
     let (tx, rx) = oneshot::channel();
+
     let pg_container_port = (&*POSTGRES_CONTAINER).get_host_port_ipv4(5432).expect("Postgres Container Port retrieved");
-    change_db_port(&config_path, pg_container_port).expect("Postgres Port changed");
+    let pg_container_host = (&*POSTGRES_CONTAINER).get_host().expect("Postgres Container Port retrieved").to_string();
+    change_db_config(&config_path, pg_container_host, pg_container_port).expect("Postgres Port changed");
 
     thread::spawn(move || {
         runtime::Builder::new_current_thread()
@@ -77,11 +79,13 @@ fn init() {
     rx.blocking_recv().expect("Received started signal");
 }
 
-fn change_db_port(config_path: &str, port: u16) -> anyhow::Result<()> {
+fn change_db_config(config_path: &str, host: String, port: u16) -> anyhow::Result<()> {
     let content = fs::read_to_string(config_path)?;
 
     let mut config: Config = toml::from_str(&content)?;
     config.database_mut().set_port(port);
+    config.database_mut().set_host(host);
+
     let new_content = toml::to_string(&config)?;
     fs::write(config_path, new_content)?;
 
