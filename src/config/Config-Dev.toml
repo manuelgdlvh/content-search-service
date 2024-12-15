@@ -14,7 +14,7 @@ min_connections = 20
 [indexer_runner]
 batch_size = 1000
 interval = 86400
-wait_until_index = false
+await_initialized = false
 
 [logger]
 enabled = true

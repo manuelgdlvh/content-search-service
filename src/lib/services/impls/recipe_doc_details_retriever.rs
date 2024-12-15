@@ -9,7 +9,7 @@ use crate::services::doc_details_retriever::DocDetailsRetriever;
 
 pub struct RecipeDocDetailsRetriever<T>
 where
-    T: RecipeRepository + Send + Sync,
+    T: RecipeRepository,
 {
     recipe_repository: Arc<T>,
 }
@@ -17,7 +17,7 @@ where
 
 impl<T> RecipeDocDetailsRetriever<T>
 where
-    T: RecipeRepository + Send + Sync + 'static,
+    T: RecipeRepository,
 {
     pub fn new(di_container: &DIContainer) -> Self {
         Self {
@@ -29,7 +29,7 @@ where
 #[async_trait]
 impl<T> DocDetailsRetriever for RecipeDocDetailsRetriever<T>
 where
-    T: RecipeRepository + Send + Sync,
+    T: RecipeRepository,
 {
     async fn retrieve(&self, lang: &str, limit: u64, offset: u64) -> anyhow::Result<Vec<DocDetails>> {
         let result = self.recipe_repository.find_recipes_by_lang_and_limit_offset(lang, limit, offset).await?

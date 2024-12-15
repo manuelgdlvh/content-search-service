@@ -1,6 +1,6 @@
 use crate::models::entity::Entity::{Game, Movie, Recipe, Tv};
 
-#[derive(Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
 pub enum Entity {
     Movie,
     Tv,

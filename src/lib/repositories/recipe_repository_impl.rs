@@ -17,7 +17,7 @@ impl RecipeRepositoryImpl {
 }
 
 #[async_trait]
-pub trait RecipeRepository {
+pub trait RecipeRepository: Send + Sync + 'static {
     async fn find_recipes_by_lang_and_limit_offset(&self, lang: &str, limit: u64, offset: u64) -> anyhow::Result<Vec<Recipe>>;
 }
 

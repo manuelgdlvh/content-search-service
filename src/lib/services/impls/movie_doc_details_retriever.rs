@@ -9,7 +9,7 @@ use crate::services::doc_details_retriever::DocDetailsRetriever;
 
 pub struct MovieDocDetailsRetriever<T>
 where
-    T: MovieRepository + Send + Sync,
+    T: MovieRepository,
 {
     movie_repository: Arc<T>,
 }
@@ -17,7 +17,7 @@ where
 
 impl<T> MovieDocDetailsRetriever<T>
 where
-    T: MovieRepository + Send + Sync + 'static,
+    T: MovieRepository,
 {
     pub fn new(di_container: &DIContainer) -> Self {
         Self {
@@ -29,7 +29,7 @@ where
 #[async_trait]
 impl<T> DocDetailsRetriever for MovieDocDetailsRetriever<T>
 where
-    T: MovieRepository + Send + Sync,
+    T: MovieRepository,
 {
     async fn retrieve(&self, lang: &str, limit: u64, offset: u64) -> anyhow::Result<Vec<DocDetails>> {
         let result = self.movie_repository.find_movies_by_lang_and_limit_offset(lang, limit, offset).await?

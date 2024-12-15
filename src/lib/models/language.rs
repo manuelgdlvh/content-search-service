@@ -17,7 +17,7 @@ impl Language {
 
 impl From<Language> for &str {
     fn from(value: Language) -> Self {
-        match value{
+        match value {
             Es => { ES_LANGUAGE }
             En => { EN_LANGUAGE }
         }

@@ -9,7 +9,7 @@ use crate::services::doc_details_retriever::DocDetailsRetriever;
 
 pub struct GameDocDetailsRetriever<T>
 where
-    T: GameRepository + Send + Sync,
+    T: GameRepository,
 {
     game_repository: Arc<T>,
 }
@@ -17,7 +17,7 @@ where
 
 impl<T> GameDocDetailsRetriever<T>
 where
-    T: GameRepository + Send + Sync + 'static,
+    T: GameRepository,
 {
     pub fn new(di_container: &DIContainer) -> Self {
         Self {
@@ -29,7 +29,7 @@ where
 #[async_trait]
 impl<T> DocDetailsRetriever for GameDocDetailsRetriever<T>
 where
-    T: GameRepository + Send + Sync,
+    T: GameRepository,
 {
     async fn retrieve(&self, lang: &str, limit: u64, offset: u64) -> anyhow::Result<Vec<DocDetails>> {
         let result = self.game_repository.find_games_by_lang_and_limit_offset(lang, limit, offset).await?

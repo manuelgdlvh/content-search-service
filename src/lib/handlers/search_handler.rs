@@ -13,7 +13,7 @@ use crate::services::search_service_impl::SearchService;
 
 pub const LANGUAGE_HEADER: &str = "Language";
 pub const DEFAULT_LANGUAGE: &str = "EN";
-pub static DEFAULT_LANGUAGE_HEADER: LazyLock<HeaderValue> = LazyLock::new(|| {
+static DEFAULT_LANGUAGE_HEADER: LazyLock<HeaderValue> = LazyLock::new(|| {
     HeaderValue::try_from(DEFAULT_LANGUAGE).unwrap()
 });
 
@@ -36,7 +36,6 @@ where
     log::info!("received search request with language: {language}, input: {:?}", input);
 
     let entity: Entity = Entity::try_from(input.entity().as_ref()).map_err(|_| StatusCode::BAD_REQUEST.into_response())?;
-
     let language: Language = Language::try_from(language).map_err(|_| StatusCode::BAD_REQUEST.into_response())?;
 
     let keywords = input.keywords_mut();

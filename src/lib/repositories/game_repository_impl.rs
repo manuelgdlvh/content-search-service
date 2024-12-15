@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use axum::async_trait;
 use sqlx::{Pool, Postgres, query, Row};
+
 use crate::entities::game::Game;
 use crate::infrastructure::di_container::{DB_POOL_DEP, DIContainer};
 
@@ -16,7 +17,7 @@ impl GameRepositoryImpl {
 }
 
 #[async_trait]
-pub trait GameRepository {
+pub trait GameRepository: Send + Sync + 'static {
     async fn find_games_by_lang_and_limit_offset(&self, lang: &str, limit: u64, offset: u64) -> anyhow::Result<Vec<Game>>;
 }
 

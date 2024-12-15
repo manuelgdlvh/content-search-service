@@ -69,7 +69,7 @@ fn init() {
         runtime::Builder::new_current_thread()
             .enable_all()
             .build()
-            .unwrap()
+            .expect("Build web server")
             .block_on(async {
                 let _ = AppRunner::run(Some(tx)).await;
             });

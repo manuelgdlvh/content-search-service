@@ -32,7 +32,7 @@ impl DIContainer {
 
 
     pub fn add<T: Sync + Send + 'static>(&self, key: &str, dependency: T) {
-        self.deps.insert(key.to_string(), Arc::new(dependency) as Arc<dyn Any + Send + Sync>);
+        self.deps.insert(key.to_string(), Arc::new(dependency) as GenericType);
     }
 
     pub fn get<T: Sync + Send + 'static>(&self, key: &str) -> Arc<T> {

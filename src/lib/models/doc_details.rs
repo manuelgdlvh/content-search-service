@@ -1,4 +1,3 @@
-
 pub struct DocDetails {
     id: u64,
     title: String,
@@ -8,8 +7,7 @@ impl DocDetails {
     pub fn new(id: u64, mut title: String) -> Self {
         title.make_ascii_lowercase();
         Self {
-            id
-            ,
+            id,
             title,
         }
     }

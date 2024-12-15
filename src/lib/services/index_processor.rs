@@ -138,13 +138,13 @@ impl IndexProcessor {
 
 // Traits
 
-pub trait IndexWriter {
+pub trait IndexWriter: Send + Sync + 'static {
     fn write_all(&self, lang: Language, data: &[DocDetails]) -> anyhow::Result<()>;
 
     fn swap_index(&self, lang: Language, data: &[DocDetails]) -> anyhow::Result<()>;
 }
 
-pub trait IndexSearcher {
+pub trait IndexSearcher: Send + Sync {
     fn search(&self, lang: Language, tokens: &[&str]) -> anyhow::Result<Vec<u64>>;
 }
 

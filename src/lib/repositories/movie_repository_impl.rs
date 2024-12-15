@@ -17,7 +17,7 @@ impl MovieRepositoryImpl {
 }
 
 #[async_trait]
-pub trait MovieRepository {
+pub trait MovieRepository: Send + Sync + 'static {
     async fn find_movies_by_lang_and_limit_offset(&self, lang: &str, limit: u64, offset: u64) -> anyhow::Result<Vec<Movie>>;
 }
 

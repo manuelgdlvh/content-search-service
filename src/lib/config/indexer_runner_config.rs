@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 pub struct IndexerRunnerConfig {
     batch_size: u64,
     interval: u64,
-    wait_until_index: bool
+    await_initialized: bool
 }
 
 impl IndexerRunnerConfig {
@@ -16,7 +16,7 @@ impl IndexerRunnerConfig {
         self.interval
     }
 
-    pub fn wait_until_index(&self) -> bool {
-        self.wait_until_index
+    pub fn await_initialized(&self) -> bool {
+        self.await_initialized
     }
 }
