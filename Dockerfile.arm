@@ -1,0 +1,8 @@
+FROM balenalib/generic-aarch64-debian:latest
+
+ENV CONFIG_PATH=/app/Config.toml
+
+COPY target/aarch64-unknown-linux-gnu/release ./app/
+WORKDIR /app
+EXPOSE 8080
+CMD ["sh", "-c", "sleep 600"]
